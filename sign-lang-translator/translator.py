@@ -19,7 +19,7 @@ hands = mp_hands.Hands(
     min_tracking_confidence=0.5)
 
 # Gesture recognition model
-collect_data_file = open('collectedData.txt', 'w')
+collect_data_file = open('data/collectedData.txt', 'a')
 
 file = np.genfromtxt('train_gesture.csv', delimiter=',')
 angle = file[:,:-1].astype(np.float32)
@@ -61,14 +61,22 @@ while cap.isOpened():
 
             angle = np.degrees(angle) # Convert radian to degree
 
+            collect_data_file = open('data/collectedData.txt', 'a')
             if keyboard.is_pressed('s'):
                 for num in angle:
                     num = round(num, 6)
+                    print (num)
                     collect_data_file.write(str(num))
-                    collect_data_file.write(',')
-                    collect_data_file.write("30.000000")
-                    collect_data_file.write('n')
-                    print("next")
+                    # print("Read line: " + collect_data_file.readline())
+                    collect_data_file.flush()
+                    collect_data_file.write(",")
+                    collect_data_file.flush()
+                collect_data_file.write("30.000000")
+                collect_data_file.flush()
+                collect_data_file.write("\n")
+                collect_data_file.flush()
+                print("next")
+                collect_data_file.close()
             # Inference gesture
             data = np.array([angle], dtype=np.float32)
             ret, results, neighbours, dist = knn.findNearest(data, 3)
@@ -83,10 +91,12 @@ while cap.isOpened():
 
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
 
-    cv2.imshow('Game', img)
+    cv2.imshow('Sign language translator', img)
     if cv2.waitKey(1) == ord('q'):
         break
 
     if keyboard.is_pressed('e'):
+        collect_data_file.close()
         break
-    collect_data_file.close()
+
+
