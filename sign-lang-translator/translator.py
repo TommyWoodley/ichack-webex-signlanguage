@@ -4,6 +4,7 @@ import keyboard as keyboard
 import mediapipe as mp
 import numpy as np
 
+
 max_num_hands = 3
 gesture = {
     0:'fist', 1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
@@ -17,6 +18,7 @@ chinese_gesture = {
 output_text = ""
 delay_time_passed = True
 t_end = time.time() + 1
+subtitle = ""
 
 # MediaPipe hands model
 mp_hands = mp.solutions.hands
@@ -29,7 +31,7 @@ hands = mp_hands.Hands(
 # Gesture recognition model
 collect_data_file = open('data/collectedData.txt', 'a')
 
-file = np.genfromtxt('data/chi_gesture_train.csv', delimiter=',')
+file = np.genfromtxt('data/chinese_gesture_train.csv', delimiter=',')
 angle = file[:,:-1].astype(np.float32)
 label = file[:, -1].astype(np.float32)
 knn = cv2.ml.KNearest_create()
@@ -87,9 +89,11 @@ while cap.isOpened():
                 collect_data_file.close()
 
             # Inference gesture
+            # output_text = ""
             data = np.array([angle], dtype=np.float32)
             ret, results, neighbours, dist = knn.findNearest(data, 3)
             idx = int(results[0][0])
+
             if delay_time_passed:
                 t_end = time.time() + 1
                 start_idx = idx
@@ -100,21 +104,38 @@ while cap.isOpened():
 
             # Other gestures
 
+            # if idx in chinese_gesture.keys():
+            #         output_text += chinese_gesture[idx].upper()
+            #         if len(output_text) > 1:
+            #             if output_text[-1] == output_text[-2]:
+            #                 output_text = output_text[:-2]
+
+
             if idx in chinese_gesture.keys():
+
                 if time.time() < t_end:
                     delay_time_passed = False
-                    print ("The time now is: " + str(time.time()))
-                    print ("Time to end is" + str(t_end))
+                    # print ("The time now is: " + str(time.time()))
+                    # print ("Time to end is" + str(t_end))
                     # unchanged = idx != prev_idx
                     # prev_idx = idx
                 else:
                     delay_time_passed = True
                     print("delay time is passed")
-                    if start_idx == idx:
+                    if start_idx == idx or len(output_text) == 0 or len(output_text) == 1 :
                         output_text += chinese_gesture[idx].upper()
+                        print(output_text)
+                        subtitle += chinese_gesture[idx].upper()
+
+                    if len(output_text) > 1:
+                        if output_text[-1] == output_text[-2]:
+                            output_text = output_text[:-2]
+
 
             cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
+
+
 
     cv2.imshow('Sign language translator', img)
     if cv2.waitKey(1) == ord('q'):
@@ -124,5 +145,7 @@ while cap.isOpened():
         collect_data_file.close()
         print("The output text is: " + output_text)
         break
+
+    # time.sleep(1);
 
 
