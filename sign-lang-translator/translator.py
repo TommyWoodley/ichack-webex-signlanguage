@@ -31,12 +31,11 @@ hands = mp_hands.Hands(
 
 
 # Decide on the language
-# lang = input("Please select the language!\n"
-#              "1 - English\n"
-#              "2 - Chinese\n"
-#              "(If not selected, defaulted to English")
+lang = input("Please select the language!\n"
+             "1 - English\n"
+             "2 - Chinese\n"
+             "(If not selected, defaulted to English")
 
-lang = "1"
 
 if lang == "2":
     print("chinese selected in train data")
@@ -47,6 +46,7 @@ else:
 
 # Gesture recognition model
 collect_data_file = open('data/collectedData.txt', 'a')
+
 
 angle = file[:,:-1].astype(np.float32)
 label = file[:, -1].astype(np.float32)
@@ -128,9 +128,13 @@ while cap.isOpened():
                     delay_time_passed = True
                     print("delay time is passed")
                     if start_idx == idx or len(output_text) == 0 or len(output_text) == 1 :
-                        output_text += english_gesture[idx].upper()
+                        if lang == "1":
+                            output_text += english_gesture[idx].upper()
+                        else:
+                            output_text += chinese_gesture[idx].upper()
+
                         print(output_text)
-                        subtitle += english_gesture[idx].upper()
+                        # subtitle += english_gesture[idx].upper()
 
                     if len(output_text) > 1:
                         if output_text[-1] == output_text[-2]:
