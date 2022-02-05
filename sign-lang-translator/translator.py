@@ -6,10 +6,10 @@ import numpy as np
 
 
 max_num_hands = 3
-gesture = {
-    0:'fist', 1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
-    6:'six', 7:'A', 8:'spiderman', 9:'yeah', 10:'ok', 30: 'love',
-    25: 'z',
+english_gesture = {
+    0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:"G",
+    7:'H', 8:'I', 9:'K', 10:'L', 11:'M', 12:'N', 13:'O',
+    14:'Q',
 }
 chinese_gesture = {
     0:'i', 1:'c', 2:'h', 3:'a', 4:'k', 5:'ch', 6:'ng'
@@ -27,6 +27,22 @@ hands = mp_hands.Hands(
     max_num_hands=max_num_hands,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5)
+
+
+# Decide on the language
+# lang = input("Please select the language!\n"
+#              "1 - English\n"
+#              "2 - Chinese\n"
+#              "(If not selected, defaulted to English")
+
+lang = "1"
+
+if lang == "2":
+    print("chinese selected in train data")
+    file = np.genfromtxt('data/chinese_gesture_train.csv', delimiter=',')
+else:
+    file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
+
 
 # Gesture recognition model
 collect_data_file = open('data/collectedData.txt', 'a')
@@ -104,15 +120,8 @@ while cap.isOpened():
 
             # Other gestures
 
-            # if idx in chinese_gesture.keys():
-            #         output_text += chinese_gesture[idx].upper()
-            #         if len(output_text) > 1:
-            #             if output_text[-1] == output_text[-2]:
-            #                 output_text = output_text[:-2]
 
-
-            if idx in chinese_gesture.keys():
-
+            if idx in english_gesture.keys():
                 if time.time() < t_end:
                     delay_time_passed = False
                     # print ("The time now is: " + str(time.time()))
@@ -131,8 +140,21 @@ while cap.isOpened():
                         if output_text[-1] == output_text[-2]:
                             output_text = output_text[:-2]
 
+                    if start_idx == idx:
+                        if lang == "2":
+                            output_text += chinese_gesture[idx].upper()
+                        else:
+                            output_text += english_gesture[idx].upper()
 
-            cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
+            if lang == "2":
+                cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]),
+                            int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                            fontScale=1.5, color=(0, 0, 255), thickness=2)
+            else:
+                cv2.putText(img, text=english_gesture[idx].upper(),
+                            org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.5, color=(255, 255, 255), thickness=2)
+
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
 
 
