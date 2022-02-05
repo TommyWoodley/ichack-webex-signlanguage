@@ -6,7 +6,7 @@ import numpy as np
 max_num_hands = 1
 gesture = {
     0:'fist', 1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
-    6:'six', 7:'A', 8:'spiderman', 9:'yeah', 10:'ok',
+    6:'six', 7:'A', 8:'spiderman', 9:'yeah', 10:'ok', 30: 'love',
 }
 rps_gesture = {0:'rock', 5:'paper', 9:'scissors'}
 
@@ -21,7 +21,7 @@ hands = mp_hands.Hands(
 # Gesture recognition model
 collect_data_file = open('data/collectedData.txt', 'a')
 
-file = np.genfromtxt('train_gesture.csv', delimiter=',')
+file = np.genfromtxt('data/train_gesture.csv', delimiter=',')
 angle = file[:,:-1].astype(np.float32)
 label = file[:, -1].astype(np.float32)
 knn = cv2.ml.KNearest_create()
