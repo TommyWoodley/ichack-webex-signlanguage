@@ -1,14 +1,22 @@
 import cv2
+import time
 import keyboard as keyboard
 import mediapipe as mp
 import numpy as np
 
-max_num_hands = 1
+max_num_hands = 3
 gesture = {
     0:'fist', 1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
     6:'six', 7:'A', 8:'spiderman', 9:'yeah', 10:'ok', 30: 'love',
+    25: 'z',
 }
-rps_gesture = {0:'rock', 5:'paper', 9:'scissors'}
+chinese_gesture = {
+    0:'i', 1:'c', 2:'h', 3:'a', 4:'k', 5:'ch', 6:'ng'
+}
+
+output_text = ""
+delay_time_passed = True
+t_end = time.time() + 1
 
 # MediaPipe hands model
 mp_hands = mp.solutions.hands
@@ -21,7 +29,7 @@ hands = mp_hands.Hands(
 # Gesture recognition model
 collect_data_file = open('data/collectedData.txt', 'a')
 
-file = np.genfromtxt('data/train_gesture.csv', delimiter=',')
+file = np.genfromtxt('data/chi_gesture_train.csv', delimiter=',')
 angle = file[:,:-1].astype(np.float32)
 label = file[:, -1].astype(np.float32)
 knn = cv2.ml.KNearest_create()
@@ -71,24 +79,41 @@ while cap.isOpened():
                     collect_data_file.flush()
                     collect_data_file.write(",")
                     collect_data_file.flush()
-                collect_data_file.write("30.000000")
+                collect_data_file.write("4.000000")
                 collect_data_file.flush()
                 collect_data_file.write("\n")
                 collect_data_file.flush()
                 print("next")
                 collect_data_file.close()
+
             # Inference gesture
             data = np.array([angle], dtype=np.float32)
             ret, results, neighbours, dist = knn.findNearest(data, 3)
             idx = int(results[0][0])
+            if delay_time_passed:
+                t_end = time.time() + 1
+                start_idx = idx
 
             # Draw gesture result
             # if idx in rps_gesture.keys():
                 #cv2.putText(img, text=rps_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
 
             # Other gestures
-            cv2.putText(img, text=gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
 
+            if idx in chinese_gesture.keys():
+                if time.time() < t_end:
+                    delay_time_passed = False
+                    print ("The time now is: " + str(time.time()))
+                    print ("Time to end is" + str(t_end))
+                    # unchanged = idx != prev_idx
+                    # prev_idx = idx
+                else:
+                    delay_time_passed = True
+                    print("delay time is passed")
+                    if start_idx == idx:
+                        output_text += chinese_gesture[idx].upper()
+
+            cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
 
     cv2.imshow('Sign language translator', img)
@@ -97,6 +122,7 @@ while cap.isOpened():
 
     if keyboard.is_pressed('e'):
         collect_data_file.close()
+        print("The output text is: " + output_text)
         break
 
 
