@@ -32,21 +32,22 @@ hands = mp_hands.Hands(
 
 
 # Decide on the language
-lang = input("Please select the language!\n"
-             "1 - English\n"
-             "2 - Chinese\n"
-             "(If not selected, defaulted to English")
-
-
-if lang == "2":
-    print("chinese selected in train data")
-    file = np.genfromtxt('data/chinese_gesture_train.csv', delimiter=',')
-else:
-    file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
-
+# lang = input("Please select the language!\n"
+#              "1 - English\n"
+#              "2 - Chinese\n"
+#              "(If not selected, defaulted to English")
+#
+#
+# if lang == "2":
+#     print("chinese selected in train data")
+#     file = np.genfromtxt('data/chinese_gesture_train.csv', delimiter=',')
+# else:
+#     file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
+lang = "1"
+file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
 
 # Gesture recognition model
-collect_data_file = open('data/photo_test/pic1.jpg', 'a')
+
 
 
 angle = file[:,:-1].astype(np.float32)
@@ -55,7 +56,8 @@ knn = cv2.ml.KNearest_create()
 knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 
 
-def trans(img, choice):
+def trans(filePath):
+    img = open(filePath, 'a')
     img = cv2.imread("data/photo_test/pic1.jpg")
     img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -148,9 +150,7 @@ def trans(img, choice):
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
             # img.save("data/result.jpg")
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            cv2.imwrite("data/result.jpg", img)
-            print("hello")
-            return res
+            cv2.imwrite(filePath, img)
 
 
 
@@ -167,5 +167,5 @@ def trans(img, choice):
 
 
 
-if __name__ == '__main__':
-    trans(collect_data_file, 1)
+# if __name__ == '__main__':
+#     trans(filePath, 1)
