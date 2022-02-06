@@ -1,7 +1,7 @@
 const Webex = require('webex');
 const Console = require("console");
 
-const accessToken = 'OTVmZjdlNDQtOWQzYi00NDY0LWFlMTYtZTNmNTRjYzdiZTY4Y2FiYmY1ODUtMzQx_PE93_bdb8ccfc-5fe0-4094-989e-d0d5a1d14728';
+const accessToken = 'ODBjMWQ0Y2EtMTlhYi00NWJkLWI4ZjUtN2IwMDFmMGEzNjkwZTJiZTRiOTEtMjQ1_PE93_bdb8ccfc-5fe0-4094-989e-d0d5a1d14728';
 
 if (accessToken === '<insert_your_access_token_here>') {
   alert('Please add your access token to app.js');
@@ -355,12 +355,19 @@ var greyscaleVideoProcessor = {
     // this.ctx1.drawImage(this.video, 0, 0);
     // var frame = this.ctx1.getImageData(0, 0, this.c1.width, this.c1.height);
 
-    var dataURL = extractAndReturnBase64('self-view')
+    var dataURL = extractAndReturnBase64('self-view');
+    console.log(document.getElementById("testToggleSwitch1").checked);
+
+    var obj = new Object();
+    obj.lang = (document.getElementById("testToggleSwitch1").checked) ? "chi" : "eng";
+    obj.img = dataURL
+    var jsonString= JSON.stringify(obj)
 
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "http://127.0.0.1:5000/", true);
-    xhr.send(dataURL);
+    //xhr.setRequestHeader("Content-Type", "application/json")
+    xhr.send(jsonString);
 
     var xhr2 = new XMLHttpRequest();
     xhr2.open("GET", "http://127.0.0.1:5000/", true);
