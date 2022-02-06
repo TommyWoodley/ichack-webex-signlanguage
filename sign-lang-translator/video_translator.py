@@ -3,9 +3,7 @@ import time
 import keyboard as keyboard
 import mediapipe as mp
 import numpy as np
-import gtts
 import pyttsx3 as pyttsx3
-from playsound import playsound
 
 def draw_text(img, text,
           font=cv2.FONT_HERSHEY_PLAIN,
@@ -27,7 +25,7 @@ max_num_hands = 2
 english_gesture = {
     0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:"G", 7:'H', 8:'I', 9:'J', 10: 'K',
     11:'L', 12:'M', 13:'N', 14:'O', 15:'P', 16:'Q', 17:'R', 18:'S', 19:'T', 20:'U',
-    21:'V', 22:'W', 23:'X', 24:'Y', 25:'Z', 26:' ', 27:'.', 28:'spiderman!',
+    21:'V', 22:'W', 23:'X', 24:'Y', 25:'Z', 26:' ', 27:'.', 28:'spiderman!', 29:'',
 }
 
 chinese_gesture = {
@@ -49,11 +47,11 @@ hands = mp_hands.Hands(
 
 
 # Decide on the language
-# lang = input("Please select the language!\n"
-#              "1 - English\n"
-#              "2 - Chinese\n"
-#              "(If not selected, defaulted to English")
-lang = "1"
+lang = input("Please select the language!\n"
+             "1 - English\n"
+             "2 - Chinese\n"
+             "(If not selected, defaulted to English")
+# lang = "1"
 
 if lang == "2":
     print("chinese selected in train data")
@@ -112,7 +110,7 @@ while cap.isOpened():
                     collect_data_file.flush()
                     collect_data_file.write(",")
                     collect_data_file.flush()
-                collect_data_file.write("0.000000")
+                collect_data_file.write("29.000000")
                 collect_data_file.flush()
                 collect_data_file.write("\n")
                 collect_data_file.flush()
@@ -137,7 +135,10 @@ while cap.isOpened():
                     print("delay time is passed")
                     if start_idx == idx or len(output_text) == 0 or len(output_text) == 1 :
                         if lang == "1":
-                            output_text += english_gesture[idx].upper()
+                            if idx == 29:
+                                output_text = output_text[:-1]
+                            else:
+                                output_text += english_gesture[idx].upper()
                         else:
                             output_text += chinese_gesture[idx].upper()
 
