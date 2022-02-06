@@ -18,16 +18,17 @@ queue = []
 
 @app.route("/", methods=['POST'])
 def receive():
-    
+
     filename = f'result{time.time()}'  # I assume you have a way of picking unique filenames
-    with open(filename+'.txt', 'wb') as f:
-        f.write(request.data)
+    lang_code = 1 if (request.get_json(force=True)["lang"] == "eng") else 2
+    with open(filename+'.txt', 'w') as f:
+        f.write(request.get_json(force=True)["img"])
     with open(filename+'.txt', 'r') as f:
         data_modified = re.sub('^data:image/.+;base64,', '', f.read())
         imgdata = base64.b64decode(data_modified)
         with open(filename+'.jpg', 'wb') as f2:
             f2.write(imgdata)
-            queue.append(filename+'.jpg')
+            queue.append((filename+'.jpg', lang_code))
     os.remove(filename+'.txt')
            
         
@@ -43,7 +44,8 @@ def receive():
 @app.route("/", methods=['GET'])
 def send():
 
-    filename = queue.pop()
+    filename, lang_code = queue.pop()
+    print("queoe decond eleme is " + str(lang_code))
     img_encode = ""
     trans(filename)
     with open(filename, "rb") as f:
