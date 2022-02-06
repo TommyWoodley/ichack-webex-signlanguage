@@ -4,18 +4,46 @@ import numpy as np
 
 static_image_mode = True
 max_num_hands = 1
+time_for_same_letter = 0
 english_gesture = {
-    0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:"G", 7:'H', 8:'I', 9:'J', 10: 'K',
-    11:'L', 12:'M', 13:'N', 14:'O', 15:'P', 16:'Q', 17:'R', 18:'S', 19:'T', 20:'U',
-    21:'V', 22:'W', 23:'X', 24:'Y', 25:'Z', 26:' ', 27:'.', 28:'',
+    0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: "G", 7: 'H', 8: 'I', 9: 'J', 10: 'K',
+    11: 'L', 12: 'M', 13: 'N', 14: 'O', 15: 'P', 16: 'Q', 17: 'R', 18: 'S', 19: 'T', 20: 'U',
+    21: 'V', 22: 'W', 23: 'X', 24: 'Y', 25: 'Z', 26: ' ', 27: '.', 28: '',
 }
 
 chinese_gesture = {
-    0:'i', 1:'c', 2:'h', 3:'a', 4:'k', 5:'ch', 6:'ng'
+    0: 'i', 1: 'c', 2: 'h', 3: 'a', 4: 'k', 5: 'ch', 6: 'ng'
 }
 
 output_text = ""
 subtitle = ""
+
+# Function to store the chars
+sentence = []
+log = []
+
+
+def store_char(ch):
+    global time_for_same_letter
+    log.append(ch)
+    if ch == '.':
+        sentence.append(ch)
+        sub = ''.join(sentence)
+        sentence.clear()
+        return sub
+
+    if len(sentence):
+        sentence.append(ch)
+    else:
+        if ch == log[-1]:
+            time_for_same_letter += 1
+            if time_for_same_letter >= 30:
+                time_for_same_letter = 0
+                log.clear()
+                sentence.append(ch)
+
+    # return ''
+    return sentence
 
 
 # MediaPipe hands model
@@ -25,7 +53,6 @@ hands = mp_hands.Hands(
     max_num_hands=max_num_hands,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5)
-
 
 # Decide on the language
 # lang = input("Please select the language!\n"
@@ -43,7 +70,7 @@ lang = "1"
 file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
 
 # Gesture recognition model
-angle = file[:,:-1].astype(np.float32)
+angle = file[:, :-1].astype(np.float32)
 label = file[:, -1].astype(np.float32)
 knn = cv2.ml.KNearest_create()
 knn.train(angle, cv2.ml.ROW_SAMPLE, label)
@@ -64,8 +91,8 @@ def trans(filePath):
                 joint[j] = [lm.x, lm.y, lm.z]
 
             # Compute angles between joints
-            v1 = joint[[0,1,2,3,0,5,6,7,0,9,10,11,0,13,14,15,0,17,18,19],:] # Parent joint
-            v2 = joint[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],:] # Child joint
+            v1 = joint[[0, 1, 2, 3, 0, 5, 6, 7, 0, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19], :]  # Parent joint
+            v2 = joint[[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], :]  # Child joint
             v = v2 - v1
 
             # Normalize v
@@ -73,10 +100,10 @@ def trans(filePath):
 
             # Get angle using arcos of dot product
             angle = np.arccos(np.einsum('nt,nt->n',
-                v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:],
-                v[[1,2,3,5,6,7,9,10,11,13,14,15,17,18,19],:])) # [15,]
+                                        v[[0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 18], :],
+                                        v[[1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15, 17, 18, 19], :]))  # [15,]
 
-            angle = np.degrees(angle) # Convert radian to degree
+            angle = np.degrees(angle)  # Convert radian to degree
 
             # Inference gesture
             data = np.array([angle], dtype=np.float32)
@@ -92,17 +119,24 @@ def trans(filePath):
             # Output gesture
             if lang == "2":
                 cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]),
-                            int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=1.5, color=(0, 0, 255), thickness=2)
+                                                                         int(res.landmark[0].y * img.shape[0] + 20)),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                            fontScale=3.5, color=(0, 0, 255), thickness=2)
+                sub = store_char(chinese_gesture[idx])
             else:
                 cv2.putText(img, text=english_gesture[idx].upper(),
                             org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.5, color=(255, 255, 255), thickness=2)
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=3.5, color=(255, 255, 255), thickness=2)
+                sub = store_char(english_gesture[idx])
 
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
+            if sub != '':
+                cv2.putText(img, text=sub,
+                            org=(100, 100),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=5, color=(255, 255, 255), thickness=3)
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            img = cv2.flip(img, 1)
             cv2.imwrite(filePath, img)
-
 
 # if __name__ == '__main__':
 #     trans(filePath, 1)
