@@ -16,15 +16,38 @@ chinese_gesture = {
 }
 
 output_text = ""
-sub = ""
-subtitle = ""
+# sub = ""
+# subtitle = ""
 
 # Function to store the chars
 time_for_same_letter = 0
 sub_frame_count = 0
-sentence = []
+# sentence = []
 log = []
 
+
+# def store_char(ch):
+#     global time_for_same_letter
+#     global sub
+#
+#     if len(log) != 0:
+#         if ch == log[-1]:
+#             time_for_same_letter += 1
+#             if time_for_same_letter >= 60:
+#                 time_for_same_letter = 0
+#                 log.clear()
+#                 sentence.append(ch)
+#                 sub += ch
+#
+#         else:
+#             log.append(ch)
+#             log.clear()
+#
+#     if sentence[-1] == '.' and (len(sentence) != 0):
+#         sub = ""
+#         sentence.clear()
+#
+#     return sub
 
 def store_char(ch):
     global time_for_same_letter
@@ -35,19 +58,13 @@ def store_char(ch):
             time_for_same_letter += 1
             if time_for_same_letter >= 60:
                 time_for_same_letter = 0
-                log.clear()
-                sentence.append(ch)
-                sub += ch
+                return ch
 
         else:
-            log.append(ch)
             log.clear()
-
-    if sentence[-1] == '.' and (len(sentence) != 0):
-        sub = ""
-        sentence.clear()
-
-    return sub
+            log.append(ch)
+    else:
+        log.append(ch)
 
 # MediaPipe hands model
 mp_hands = mp.solutions.hands
