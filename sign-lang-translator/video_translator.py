@@ -15,6 +15,26 @@ chinese_gesture = {
     0:'i', 1:'c', 2:'h', 3:'a', 4:'k', 5:'ch', 6:'ng'
 }
 
+sentence = []
+
+
+def store_char(ch):
+    if ch == '.':
+        sentence.append(ch)
+        sub = ''.join(sentence)
+        sentence.clear()
+        print (sub)
+        return sub
+
+    if len(sentence):
+        if ch != sentence[-1]:
+            sentence.append(ch)
+    else:
+        sentence.append(ch)
+
+    return ''
+
+
 output_text = ""
 delay_time_passed = True
 t_end = time.time() + 2
@@ -139,17 +159,36 @@ while cap.isOpened():
                         if output_text[-1] == output_text[-2]:
                             output_text = output_text[:-2]
 
+            # if lang == "2":
+            #     cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]),
+            #                 int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+            #                 fontScale=2.5, color=(0, 0, 255), thickness=2)
+            # else:
+            #     cv2.putText(img, text=english_gesture[idx].upper(),
+            #                 org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)),
+            #                 fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2.5, color=(255, 255, 255), thickness=2)
+            #
+            # mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
+
             if lang == "2":
                 cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]),
                             int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=2.5, color=(0, 0, 255), thickness=2)
+                            fontScale=3.5, color=(0, 0, 255), thickness=2)
+                sub = store_char(chinese_gesture[idx])
             else:
                 cv2.putText(img, text=english_gesture[idx].upper(),
                             org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2.5, color=(255, 255, 255), thickness=2)
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=3.5, color=(255, 255, 255), thickness=2)
+                sub = store_char(english_gesture[idx])
 
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
 
+            if sub != '':
+                cv2.putText(img, text=sub,
+                            org=(300,300),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2, color=(255, 255, 255), thickness=2)
+
+            # sub = ''
 
 
     cv2.imshow('Sign language translator', img)

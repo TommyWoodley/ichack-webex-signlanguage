@@ -52,12 +52,12 @@ knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 def trans(filePath):
     img = open(filePath, 'a')
     img = cv2.imread(filePath)
-    img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     result = hands.process(img)
 
     if result.multi_hand_landmarks is not None:
+        img = cv2.flip(img, 1)
         for res in result.multi_hand_landmarks:
             joint = np.zeros((21, 3))
             for j, lm in enumerate(res.landmark):
@@ -93,16 +93,55 @@ def trans(filePath):
             if lang == "2":
                 cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]),
                             int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=1.5, color=(0, 0, 255), thickness=2)
+                            fontScale=3.5, color=(0, 0, 255), thickness=2)
+                sub = store_char(chinese_gesture[idx])
             else:
                 cv2.putText(img, text=english_gesture[idx].upper(),
                             org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.5, color=(255, 255, 255), thickness=2)
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=3.5, color=(255, 255, 255), thickness=2)
+                sub = store_char(english_gesture[idx])
 
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
+            if sub != '':
+                cv2.putText(img, text=sub,
+                            org=(100,100),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=5, color=(255, 255, 255), thickness=3)
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            img = cv2.flip(img, 1)
             cv2.imwrite(filePath, img)
 
+
+# Function to store the chars
+sentence = []
+
+
+# def store_char(ch):
+#     if ch == '.':
+#         sentence.append(ch)
+#         sub = ''.join(sentence)
+#         sentence.clear()
+#         return sub
+#
+#     if len(sentence):
+#         sentence.append(ch)
+#     else:
+#         if ch != sentence[-1]:
+#             sentence.append(ch)
+
+def store_char(ch):
+    if ch == '.':
+        sentence.append(ch)
+        sub = ''.join(sentence)
+        sentence.clear()
+        return sub
+
+    if len(sentence):
+        sentence.append(ch)
+    else:
+        if ch != sentence[-1]:
+            sentence.append(ch)
+
+    return ''
 
 # if __name__ == '__main__':
 #     trans(filePath, 1)
