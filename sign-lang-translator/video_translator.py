@@ -17,7 +17,7 @@ chinese_gesture = {
 
 output_text = ""
 delay_time_passed = True
-t_end = time.time() + 1
+t_end = time.time() + 2
 subtitle = ""
 
 # MediaPipe hands model
@@ -30,11 +30,11 @@ hands = mp_hands.Hands(
 
 
 # Decide on the language
-lang = input("Please select the language!\n"
-             "1 - English\n"
-             "2 - Chinese\n"
-             "(If not selected, defaulted to English")
-
+# lang = input("Please select the language!\n"
+#              "1 - English\n"
+#              "2 - Chinese\n"
+#              "(If not selected, defaulted to English")
+lang = "1"
 
 if lang == "2":
     print("chinese selected in train data")
@@ -94,7 +94,7 @@ while cap.isOpened():
                     collect_data_file.flush()
                     collect_data_file.write(",")
                     collect_data_file.flush()
-                collect_data_file.write("6.000000")
+                collect_data_file.write("0.000000")
                 collect_data_file.flush()
                 collect_data_file.write("\n")
                 collect_data_file.flush()
@@ -108,7 +108,7 @@ while cap.isOpened():
             idx = int(results[0][0])
 
             if delay_time_passed:
-                t_end = time.time() + 1
+                t_end = time.time() + 2
                 start_idx = idx
 
             # Draw gesture result
@@ -161,6 +161,5 @@ while cap.isOpened():
         print("The output text is: " + output_text)
         break
 
-    # time.sleep(1);
 
 
