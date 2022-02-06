@@ -5,6 +5,7 @@ import mediapipe as mp
 import numpy as np
 import pyttsx3 as pyttsx3
 
+
 def draw_text(img, text,
           font=cv2.FONT_HERSHEY_PLAIN,
           pos=(0, 0),
@@ -51,7 +52,6 @@ lang = input("Please select the language!\n"
              "1 - English\n"
              "2 - Chinese\n"
              "(If not selected, defaulted to English")
-# lang = "1"
 
 if lang == "2":
     print("chinese selected in train data")
@@ -88,19 +88,19 @@ while cap.isOpened():
             for j, lm in enumerate(res.landmark):
                 joint[j] = [lm.x, lm.y, lm.z]
 
-            # Compute angles between joints
+            # Compute vectors between each points (joints)
             v1 = joint[[0,1,2,3,0,5,6,7,0,9,10,11,0,13,14,15,0,17,18,19],:] # Parent joint
             v2 = joint[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],:] # Child joint
-            v = v2 - v1 # [20,3]
-            # Normalize v
+            v = v2 - v1
+
             v = v / np.linalg.norm(v, axis=1)[:, np.newaxis]
 
-            # Get angle using arcos of dot product
+            # Getting angle using dot product folmula
             angle = np.arccos(np.einsum('nt,nt->n',
                 v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:],
                 v[[1,2,3,5,6,7,9,10,11,13,14,15,17,18,19],:])) # [15,]
 
-            angle = np.degrees(angle) # Convert radian to degree
+            angle = np.degrees(angle)
 
             collect_data_file = open('data/collectedData.txt', 'a')
             if keyboard.is_pressed('s'):
@@ -161,12 +161,9 @@ while cap.isOpened():
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
 
             if output_text != '':
-                # cv2.putText(img, text=output_text,
-                #             org=(250,450),
-                #             fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(0, 0, 0), thickness=2)
                 draw_text(img, output_text,
                           font=cv2.FONT_HERSHEY_PLAIN,
-                          pos=(250,400),
+                          pos=(50,400),
                           font_scale=4,
                           font_thickness=2,
                           text_color=(255, 255, 255),
