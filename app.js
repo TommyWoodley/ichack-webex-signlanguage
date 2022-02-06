@@ -1,6 +1,7 @@
 const Webex = require('webex');
 
-const accessToken = '<insert_your_access_token_here>';
+
+const accessToken = 'ZmEwZTg2MzAtZGIwMy00NTk0LWE4YTctNWI3MTY2M2YzZmZkYjNlZmE3OGMtMmYx_PE93_bdb8ccfc-5fe0-4094-989e-d0d5a1d14728';
 
 if (accessToken === '<insert_your_access_token_here>') {
   alert('Please add your access token to app.js');
@@ -251,6 +252,17 @@ function extractAndDownloadFrame(videoId, filename) {
   downloadImage(img, filename + '.jpeg');
 }
 
+function extractAndReturnBase64(videoId) {
+  var video = document.getElementById(videoId);
+  var canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth
+  canvas.height = video.videoHeight
+  var context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0);
+  var img = canvas.toDataURL("image/jpeg", 1.0);
+  return img
+}
+
 function downloadImage(data, filename) {
   var a = document.createElement('a');
   a.href = data;
@@ -340,18 +352,33 @@ var greyscaleVideoProcessor = {
   },  
 
   computeFrame: function() {
-    this.ctx1.drawImage(this.video, 0, 0);
-    var frame = this.ctx1.getImageData(0, 0, this.c1.width, this.c1.height);
-    var l = frame.data.length / 4;  
+    // this.ctx1.drawImage(this.video, 0, 0);
+    // var frame = this.ctx1.getImageData(0, 0, this.c1.width, this.c1.height);
 
-    for (var i = 0; i < l; i++) {
-      var grey = (frame.data[i * 4 + 0] + frame.data[i * 4 + 1] + frame.data[i * 4 + 2]) / 3;
+    var dataURL = extractAndReturnBase64('self-view')
 
-      frame.data[i * 4 + 0] = grey;
-      frame.data[i * 4 + 1] = grey;
-      frame.data[i * 4 + 2] = grey;
-    }
-    this.ctx1.putImageData(frame, 0, 0);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://127.0.0.1:5000/", true);
+    xhr.send(dataURL);
+
+    var xhr2 = new XMLHttpRequest();
+    xhr2.open("GET", "http://127.0.0.1:5000/", true);
+    xhr2.onload = function () {
+      // Do something with the retrieved data ( found in xmlhttp.response )
+      var image = new Image;
+      
+      image.src = "data:image/jpeg;base64," + JSON.parse(xhr2.responseText)['img'];
+      image.onload = () => {
+        var ctx = document.getElementById("self-view-canvas").getContext("2d");
+        ctx.drawImage(image, 0, 0);
+        imageData = ctx.getImageData(0, 0, 1280, 720);
+        ctx.putImageData(imageData, 0, 0);
+      }
+      
+    };
+    xhr2.send();
+    
 
     return;
   }
