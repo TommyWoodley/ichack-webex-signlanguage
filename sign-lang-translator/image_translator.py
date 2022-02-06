@@ -168,4 +168,3 @@ def trans(img, choice):
 
 if __name__ == '__main__':
     trans(collect_data_file, 1)
-
