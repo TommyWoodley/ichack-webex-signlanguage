@@ -28,94 +28,80 @@
       <div class="md-top-bar__container row">
         <div class="md-top-bar__brand">
           <a class="md-brand" href="#">
-            <div class="md-brand__logo">
-              <i class="icon icon-cisco-logo"></i>
-            </div>
-            <div class="md-brand__title">Webex JS SDK Samples</div>
+            <div class="md-brand__title">Webex Sign Language Translator</div>
           </a>
         </div>
         <nav class="md-top-bar__nav ">
             <div class="md-list md-list--horizontal" role="list">
-
             </div>
           </nav>
       </div>
     </header>
     <main>
-      <h1>Single Party Calling</h1>
-      <p>This sample demonstrates 1:1 calling.</p>
-      <form id="credentials">
-        <fieldset>
-          <legend>Credentials</legend>
-          <input
-            id="access-token"
-            name="accessToken"
-            placeholder="Your access token"
-            type="text">
-          <input id="connect" title="connect" type="submit" value="connect">
-          <p id="connection-status">disconnected</p>
-        </fieldset>
-      </form>
+      <div>
+        <div class="row">
+          <div class="md-input-group small-10 columns">
+            <input
+                class="md-input"
+                id="access-token"
+                name="accessToken"
+                placeholder="Your access token"
+                type="text">
+          </div>
+          <div class="small-2 columns">
+            <button id="connect" title="connect" type="button" class="md-button">Connect</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="small-12 columns">
+            <p id="connection-status">Disconnected</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="md-input-group small-10 columns">
+            <input
+                class="md-input"
+                id="invitee"
+                name="invitee"
+                placeholder="Person ID or Email Address or SIP URI or Room ID"
+                placeholder="Person ID or Email Address or SIP URI or Room ID"
+                type="text">
+          </div>
+          <div class="small-2 columns">
+            <button title="dial" id="dial" type="button" class="md-button">Dial</button>
+          </div>
+        </div>
+        <div class="row">
+          <p style="color:white;">.</p>
+        </div>
+        <div class="row">
+          <div class="md-input-group small-1 columns">
+            <button id="hangup" title="hangup" type="button" class="md-button md-button--circle md-button--red icon icon-cancel_36"></button>
+          </div>
+          <div class="md-input-group small-1 columns">
+            <div id="local" class="md-avatar md-avatar--inactive" title="Shannon Sangha">
+              <span class="md-avatar__letter">SS</span>
+            </div>
+          </div>
+          <div class="md-input-group small-1 columns">
+            <div id="remote" class="md-avatar md-avatar--inactive" title="Tommy Woodley">
+              <span class="md-avatar__letter">TW</span>
+            </div>
+          </div>
+          <div class="md-input-group small-9 columns">
 
-      <form id="dialer">
-        <fieldset>
-          <legend>Dialer</legend>
-          <input
-            id="invitee"
-            name="invitee"
-            placeholder="Person ID or Email Address or SIP URI or Room ID"
-            type="text">
-            <input title="dial" type="submit" value="dial">
-        </fieldset>
-      </form>
-
-      <form id="constraints">
-        <fieldset>
-          <legend>Constraints</legend>
-          <input id="constraints-audio" title="audio" type="checkbox" checked>
-          <label for="constraints-audio">Audio</label>
-          <input id="constraints-video" title="video" type="checkbox" checked>
-          <label for="constraints-video">Video</label>
-        </fieldset>
-      </form>
-
-      <form id="call-controls">
-        <fieldset>
-          <legend>Call Controls</legend>
-          <button id="hangup" title="hangup" type="button">cancel/hangup</button>
-          <button id="extractlocalframe" title="extractlocalframe" type="button">extract local frame</button>
-          <button id="extractremoteframe" title="extractremoteframe" type="button">extract remote frame</button>
-        </fieldset>
-      </form>
-
-      <table id="call-status">
-        <thead>
-            <tr>
-                <th colspan="2">Call Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Local Participant</td>
-                <td id="call-status-local"></td>
-            </tr>
-            <tr>
-              <td>Remote Participant</td>
-              <td id="call-status-remote"></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div style="display: flex">
-        <video style="width:50%" id="self-view" muted autoplay playsinline></video>
-        <div style="width:50%">
-          <audio id="remote-view-audio" autoplay playsinline></audio>
-          <video style="width:100%" id="remote-view-video" autoplay playsinline></video>
+          </div>
         </div>
       </div>
-      <div style="display: flex">
-        <canvas style="width:50%" id="self-view-canvas"></canvas>
-        <canvas style="width:50%" id="audio-visualisation-canvas"></canvas>
+      </div>
+      <div class="row">
+        <p style="color:white;">.</p>
+      </div>
+      <div style="display: flex" class="row">
+        <video style="width:0%" id="self-view" muted autoplay playsinline></video>
+        <canvas style="width:50%;padding-top: 0%;" id="self-view-canvas"></canvas>
+        <audio id="remote-view-audio" autoplay playsinline></audio>
+        <video style="width:50%" id="remote-view-video" autoplay playsinline></video>
       </div>
     </main>
 

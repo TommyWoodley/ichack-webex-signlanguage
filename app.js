@@ -1,7 +1,7 @@
 const Webex = require('webex');
+const Console = require("console");
 
-
-const accessToken = 'ZmEwZTg2MzAtZGIwMy00NTk0LWE4YTctNWI3MTY2M2YzZmZkYjNlZmE3OGMtMmYx_PE93_bdb8ccfc-5fe0-4094-989e-d0d5a1d14728';
+const accessToken = 'OTVmZjdlNDQtOWQzYi00NDY0LWFlMTYtZTNmNTRjYzdiZTY4Y2FiYmY1ODUtMzQx_PE93_bdb8ccfc-5fe0-4094-989e-d0d5a1d14728';
 
 if (accessToken === '<insert_your_access_token_here>') {
   alert('Please add your access token to app.js');
@@ -77,7 +77,7 @@ function connect() {
           // This is just a little helper for our selenium tests and doesn't
           // really matter for the example
           document.body.classList.add('listening');
-          document.getElementById('connection-status').innerHTML = 'connected';
+          document.getElementById('connection-status').innerHTML = 'Connected';
           // Our device is now connected
           resolve();
         })
@@ -115,6 +115,7 @@ function bindMeetingEvents(meeting) {
     }
     if (media.type === 'local') {
       document.getElementById('self-view').srcObject = media.stream;
+      //greyscaleVideoProcessor.start()
     }
     if (media.type === 'remoteVideo') {
       document.getElementById('remote-view-video').srcObject = media.stream;
@@ -122,7 +123,6 @@ function bindMeetingEvents(meeting) {
     if (media.type === 'remoteAudio') {
       document.getElementById('remote-view-audio').srcObject = media.stream;
       setUpAudioVisualisation(media.stream)
-      greyscaleVideoProcessor.start()
     }
   });
 
@@ -152,10 +152,21 @@ function bindMeetingEvents(meeting) {
       // We are not concerned with them in this demo
       if (memberObject.isUser) {
         if (memberObject.isSelf) {
-          document.getElementById('call-status-local').innerHTML = memberObject.status;
+          if (memberObject.status === "IN_MEETING") {
+            Console.log(memberID.displayName)
+            document.getElementById('local').className = "md-avatar md-avatar--active"
+          } else {
+            document.getElementById('local').className = "md-avatar md-avatar--inactive"
+          }
+
+          greyscaleVideoProcessor.start()
         }
         else {
-          document.getElementById('call-status-remote').innerHTML = memberObject.status;
+          if (memberObject.status === "IN_MEETING") {
+            document.getElementById('remote').className = "md-avatar md-avatar--active"
+          } else {
+            document.getElementById('remote').className = "md-avatar md-avatar--inactive"
+          }
         }
       }
     });
@@ -171,8 +182,8 @@ function bindMeetingEvents(meeting) {
 function joinMeeting(meeting) {
   // Get constraints
   const constraints = {
-    audio: document.getElementById('constraints-audio').checked,
-    video: document.getElementById('constraints-video').checked
+    audio: true,
+    video: true
   };
 
   return meeting.join().then(() => {
@@ -197,17 +208,14 @@ function joinMeeting(meeting) {
   });
 }
 
-// Now, let's set up incoming call handling
-document.getElementById('credentials').addEventListener('submit', (event) => {
-  // let's make sure we don't reload the page when we submit the form
+document.getElementById('connect').onclick = function (){
   event.preventDefault();
 
   // The rest of the incoming call setup happens in connect();
   connect();
-});
+};
 
-// And finally, let's wire up dialing
-document.getElementById('dialer').addEventListener('submit', (event) => {
+document.getElementById('dial').onclick = function (){
   // again, we don't want to reload when we try to dial
   event.preventDefault();
 
@@ -216,30 +224,22 @@ document.getElementById('dialer').addEventListener('submit', (event) => {
   // we'll use `connect()` (even though we might already be connected or
   // connecting) to make sure we've got a functional webex instance.
   connect()
-    .then(() => {
-      // Create the meeting
-      return webex.meetings.create(destination).then((meeting) => {
-        // Call our helper function for binding events to meetings
-        bindMeetingEvents(meeting);
+  .then(() => {
+    // Create the meeting
+    return webex.meetings.create(destination).then((meeting) => {
+      // Call our helper function for binding events to meetings
+      bindMeetingEvents(meeting);
 
-        return joinMeeting(meeting);
-      });
-    })
-    .catch((error) => {
-      // Report the error
-      console.error(error);
-
-      // Implement error handling here
+      return joinMeeting(meeting);
     });
-});
+  })
+  .catch((error) => {
+    // Report the error
+    console.error(error);
 
-document.getElementById('extractlocalframe').addEventListener('click', () => {
-  extractAndDownloadFrame('self-view', 'local-frame')
-});
-
-document.getElementById('extractremoteframe').addEventListener('click', () => {
-  extractAndDownloadFrame('remote-view-video', 'remote-frame')
-});
+    // Implement error handling here
+  });
+};
 
 function extractAndDownloadFrame(videoId, filename) {
   var video = document.getElementById(videoId);
