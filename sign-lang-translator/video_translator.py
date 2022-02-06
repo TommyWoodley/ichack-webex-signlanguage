@@ -142,11 +142,11 @@ while cap.isOpened():
             if lang == "2":
                 cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]),
                             int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=1.5, color=(0, 0, 255), thickness=2)
+                            fontScale=2.5, color=(0, 0, 255), thickness=2)
             else:
                 cv2.putText(img, text=english_gesture[idx].upper(),
                             org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.5, color=(255, 255, 255), thickness=2)
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2.5, color=(255, 255, 255), thickness=2)
 
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
 
