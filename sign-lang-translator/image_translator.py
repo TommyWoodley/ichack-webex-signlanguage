@@ -79,12 +79,12 @@ knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 def trans(filePath):
     img = open(filePath, 'a')
     img = cv2.imread(filePath)
+    img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     result = hands.process(img)
 
     if result.multi_hand_landmarks is not None:
-        img = cv2.flip(img, 1)
         for res in result.multi_hand_landmarks:
             joint = np.zeros((21, 3))
             for j, lm in enumerate(res.landmark):
