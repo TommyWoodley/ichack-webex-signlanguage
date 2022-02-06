@@ -10,6 +10,7 @@ from imageio import imread
 import io
 import keyboard as keyboard
 import mediapipe as mp
+import os
 
 app = Flask(__name__)
 
@@ -27,6 +28,7 @@ def receive():
         with open(filename+'.jpg', 'wb') as f2:
             f2.write(imgdata)
             queue.append(filename+'.jpg')
+    os.remove(filename+'.txt')
            
         
 
@@ -46,6 +48,7 @@ def send():
     trans(filename)
     with open(filename, "rb") as f:
         img_encode = base64.b64encode(f.read()).decode('utf-8')
+    os.remove(filename)
 
     return jsonify({'msg': 'success', 'size': [1280, 720], 'img': img_encode})
 
