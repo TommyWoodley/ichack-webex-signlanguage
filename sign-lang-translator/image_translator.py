@@ -52,13 +52,14 @@ knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 def trans(filePath):
     img = open(filePath, 'a')
     img = cv2.imread(filePath)
-    img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     result = hands.process(img)
 
     if result.multi_hand_landmarks is not None:
+
         for res in result.multi_hand_landmarks:
+            print("flipping")
             joint = np.zeros((21, 3))
             for j, lm in enumerate(res.landmark):
                 joint[j] = [lm.x, lm.y, lm.z]
@@ -101,7 +102,9 @@ def trans(filePath):
 
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            cv2.imwrite(filePath, img)
+            print("flipwd bCK")
+
+    cv2.imwrite(filePath, img)
 
 
 # if __name__ == '__main__':

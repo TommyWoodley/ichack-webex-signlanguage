@@ -197,6 +197,6 @@ def trans(filePath):
 
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
             # img.save("data/result.jpg")
-            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            cv2.imwrite(filePath, img)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    cv2.imwrite(filePath, img)
 
