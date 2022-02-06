@@ -47,12 +47,12 @@ def send():
     filename, lang_code = queue.pop()
     print("queoe decond eleme is " + str(lang_code))
     img_encode = ""
-    trans(filename, lang_code)
+    res = trans(filename, lang_code)
     with open(filename, "rb") as f:
         img_encode = base64.b64encode(f.read()).decode('utf-8')
     os.remove(filename)
 
-    return jsonify({'msg': 'success', 'size': [1280, 720], 'img': img_encode})
+    return jsonify({'msg': 'success', 'char': res, 'size': [1280, 720], 'img': img_encode})
 
     # return jsonify({})
 
@@ -102,6 +102,7 @@ hands = mp_hands.Hands(
 
 
 def trans(filePath, lang):
+    return_res = ''
     if lang == 2:
         print("chinese selected in train data")
         file = np.genfromtxt('data/chinese_gesture_train.csv', delimiter=',')
@@ -197,13 +198,17 @@ def trans(filePath, lang):
                 cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]),
                             int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                             fontScale=1.5, color=(0, 0, 255), thickness=2)
+                return_res = chinese_gesture[idx]
             else:
                 cv2.putText(img, text=english_gesture[idx].upper(),
                             org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)),
                             fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.5, color=(255, 255, 255), thickness=2)
+                return_res = english_gesture[idx]
 
             mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
             # img.save("data/result.jpg")
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     cv2.imwrite(filePath, img)
+
+    return return_res
 

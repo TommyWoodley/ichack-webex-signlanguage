@@ -329,6 +329,9 @@ function setUpAudioVisualisation(audioStream) {
   draw();
 }
 
+var sentences = ""
+var lastChars = []
+
 var greyscaleVideoProcessor = {  
   timerCallback: function() {
     if (this.video.paused || this.video.ended) {  
@@ -360,8 +363,8 @@ var greyscaleVideoProcessor = {
 
     var obj = new Object();
     obj.lang = (document.getElementById("testToggleSwitch1").checked) ? "chi" : "eng";
-    obj.img = dataURL
-    var jsonString= JSON.stringify(obj)
+    obj.img = dataURL;
+    var jsonString= JSON.stringify(obj);
 
 
     var xhr = new XMLHttpRequest();
@@ -374,6 +377,27 @@ var greyscaleVideoProcessor = {
     xhr2.onload = function () {
       // Do something with the retrieved data ( found in xmlhttp.response )
       var image = new Image;
+      var subtitleField = document.getElementById("readonlyInput");
+
+      var newChar = JSON.parse(xhr2.responseText)['char'];
+
+      console.log(lastChars)
+      if (newChar == "") {
+
+      } else if (lastChars.length < 5) {
+        lastChars.push(newChar)
+      } else if (lastChars[0] == lastChars[1] && lastChars[2] == lastChars[3] && lastChars[0] == lastChars[2] && lastChars[0] == lastChars[4] && lastChars[0] != sentences.slice(-1)) {
+        console.log(sentences);
+        sentences += lastChars[0];
+        if (sentences.length > 60) {
+          sentences = sentences.slice(1)
+        }
+        subtitleField.value = sentences;
+        lastChars = [newChar];
+      } else {
+        lastChars.shift();
+        lastChars.push(newChar);
+      }
       
       image.src = "data:image/jpeg;base64," + JSON.parse(xhr2.responseText)['img'];
       image.onload = () => {
