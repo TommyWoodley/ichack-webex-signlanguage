@@ -47,7 +47,7 @@ def send():
     filename, lang_code = queue.pop()
     print("queoe decond eleme is " + str(lang_code))
     img_encode = ""
-    trans(filename)
+    trans(filename, lang_code)
     with open(filename, "rb") as f:
         img_encode = base64.b64encode(f.read()).decode('utf-8')
     os.remove(filename)
@@ -96,20 +96,22 @@ hands = mp_hands.Hands(
 #     file = np.genfromtxt('data/chinese_gesture_train.csv', delimiter=',')
 # else:
 #     file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
-lang = "1"
-file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
+# file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
 
 # Gesture recognition model
 
 
+def trans(filePath, lang):
+    if lang == 2:
+        print("chinese selected in train data")
+        file = np.genfromtxt('data/chinese_gesture_train.csv', delimiter=',')
+    else:
+        file = np.genfromtxt('data/english_gesture_train.csv', delimiter=',')
+    angle = file[:,:-1].astype(np.float32)
+    label = file[:, -1].astype(np.float32)
+    knn = cv2.ml.KNearest_create()
+    knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 
-angle = file[:,:-1].astype(np.float32)
-label = file[:, -1].astype(np.float32)
-knn = cv2.ml.KNearest_create()
-knn.train(angle, cv2.ml.ROW_SAMPLE, label)
-
-
-def trans(filePath):
     img = open(filePath, 'a')
     img = cv2.imread(filePath)
     img = cv2.flip(img, 1)
@@ -191,7 +193,7 @@ def trans(filePath):
                         if output_text[-1] == output_text[-2]:
                             output_text = output_text[:-2]
 
-            if lang == "2":
+            if lang == 2:
                 cv2.putText(img, text=chinese_gesture[idx].upper(), org=(int(res.landmark[0].x * img.shape[1]),
                             int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                             fontScale=1.5, color=(0, 0, 255), thickness=2)
