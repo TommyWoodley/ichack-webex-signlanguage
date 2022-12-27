@@ -1,4 +1,6 @@
-# ICHack-webex-signlanguage
+# IC Hack 2022 Winner!
+
+This project was created over 24 hours during a hackathon. With this project we won the Main Sponser Prize from Cisco. A demonstration of the project is shown here: [Youtube Link](https://www.youtube.com/watch?v=_iAfwl0eRHo)
 
 **With this sign language interpreter, we aim to increase accessibility in a hybrid world. Bringing people together, no matter how they communicate.**
 
@@ -37,7 +39,6 @@ We learned about new technologies that some of us hadn’t used before such as F
 ## What's next for Sign Language Interpreter for Webex Meetings
 Working on improving the accuracy of our detection models by importing and using more data sets which should in turn allow us to expand the set of gestures supported and in more languages. We would like to support more words and sign language phrases to extend beyond the alphabet set we have focused on initially. We would also want to implement a subtitle storage functionality for later review of the meetings. 
 
-**Github link to our project:** [link](https://gitlab.doc.ic.ac.uk/tw1820/ichack-webex-signlanguage)
 
 
 **Credits:**<br />
@@ -45,4 +46,4 @@ Working on improving the accuracy of our detection models by importing and using
 + pyttsx3 API: https://www.thepythoncode.com/article/convert-text-to-speech-in-python
 + Stack Overflow
 
-This project is created by Minseo Lee, Tommy Woodley, Yijun Lin, Jonathan Foo, Shannon Sangha in ICHack22.<br />
+This project is created by Tommy Woodley, Minseo Lee, Yijun Lin, Jonathan Foo, Shannon Sangha in ICHack22.<br />
